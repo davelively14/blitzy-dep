@@ -5,6 +5,7 @@ defmodule Blitzy.Worker do
   # Users can supply an optional call to a different library. By default, we use
   # the HTTPoison library.
   def start(url, func \\ &HTTPoison.get/1) do
+    IO.puts "Running on #node-#{node}"
 
     # Note that when using a function variable, you have to include the period
     # between the variable name and any arguments being passed: func.(url)
