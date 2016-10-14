@@ -16,6 +16,11 @@ defmodule Blitzy do
     |> Enum.map(&Task.await(&1, :infinity))
   end
 
+  # Starts Blitzy.Supervisor when the app starts.
+  def start(_type, _args) do
+    Blitzy.Supervisor.start_link(:ok)
+  end
+
   #####################
   # Private Functions #
   #####################
