@@ -34,10 +34,6 @@ defmodule Blitzy.CLI do
     OptionParser.parse(args, aliases: [n: :requests], strict: [requests: :integer])
   end
 
-  #####################
-  # Private Functions #
-  #####################
-
   defp process_options(options, nodes) do
     case options do
 
@@ -89,7 +85,7 @@ defmodule Blitzy.CLI do
       results
       |> Enum.partition(fn x ->
         case x do
-          {:ok, _} -> true
+          {_, {:ok, _}} -> true
           _ -> false
         end
       end)
@@ -99,7 +95,9 @@ defmodule Blitzy.CLI do
     total_failure = total_workers - total_success
 
     # Creates a list of successful time values in ms
-    data = successes |> Enum.map(fn {:ok, time} -> time end)
+    data = successes |> Enum.map(fn {_, {:ok, time}} -> time end)
+
+    IO.inspect "Data first: #{List.first(data)}"
 
     average_time = average(data)
     longest_time = Enum.max(data)
