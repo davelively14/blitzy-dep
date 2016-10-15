@@ -50,14 +50,27 @@ defmodule Blitzy.CLI do
     Logger.info "Pummeling #{url} with #{n_requests} requests"
 
     total_nodes = Enum.count(nodes)
+
+    # Uses div/2 for integer division, which rounds down by default.
     req_per_node = div(n_requests, total_nodes)
 
+    # Distributes workload across all nodes. Although, I don't think it does
+    # what the author wants. Try having 4 nodes and like 22 requests. I think
+    # only 20 requests would be processed. We don't deal with the remainder.
+    # TODO figure out if this is an error
     nodes
     |> Enum.flat_map(fn node ->
         1..req_per_node |> Enum.map(fn _ ->
+          # Starting from Task.Supervisor makes the task supervised. We pass a
+          # tuple containing the supervisor module name and the node. async/4
+          # takes a supervisor reference (tuple with supervisor module and
+          # node), child module, function, and args. So basically, same thing as
+          # Task.async/3, but we're telling the supervisor in the first arg to
+          # start a worker remotely. This can be awaited on.
           Task.Supervisor.async({Blitzy.TaskSupervisor, node}, Blitzy.Worker, :start, [url])
         end)
       end)
+    # Collects the results of all nodes from the master node.
     |> Enum.map(&Task.await(&1, :infinity))
     |> parse_results
   end
