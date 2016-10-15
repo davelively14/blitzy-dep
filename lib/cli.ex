@@ -11,7 +11,7 @@ defmodule Blitzy.CLI do
     |> Node.start
 
     Application.get_env(:blitzy, :slave_nodes)
-    |> Node.start
+    |> Enum.each(&Node.connect(&1))
 
     args
     |> parse_args
@@ -67,7 +67,7 @@ defmodule Blitzy.CLI do
           # node), child module, function, and args. So basically, same thing as
           # Task.async/3, but we're telling the supervisor in the first arg to
           # start a worker remotely. This can be awaited on.
-          Task.Supervisor.async({Blitzy.TaskSupervisor, node}, Blitzy.Worker, :start, [url])
+          Task.Supervisor.async({Blitzy.TasksSupervisor, node}, Blitzy.Worker, :start, [url])
         end)
       end)
     # Collects the results of all nodes from the master node.
