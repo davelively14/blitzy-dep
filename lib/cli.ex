@@ -81,6 +81,7 @@ defmodule Blitzy.CLI do
     # elements for which fun returns a truthy value, and the second one – for
     # which fun returns false or nil. We ignore the list with false values.
     # TODO great way to do this
+    # NOTE differes from the book
     {successes, _failures} =
       results
       |> Enum.partition(fn x ->
@@ -95,6 +96,7 @@ defmodule Blitzy.CLI do
     total_failure = total_workers - total_success
 
     # Creates a list of successful time values in ms
+    # NOTE differs from the book
     data = successes |> Enum.map(fn {_, {:ok, time}} -> time end)
 
     IO.inspect "Data first: #{List.first(data)}"
